@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music List App</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .header {
+            width: 100%;
+            padding: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .upload-btn {
+            background-color: #333;
+            border: none;
+            color: white;
+            font-size: 30px;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .upload-btn:hover {
+            background-color: #555;
+        }
+
+        .audio-list {
+            margin-top: 80px;
+            width: 80%;
+            max-height: 60vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .audio-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #1f1f1f;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .audio-item:hover {
+            background-color: #333;
+        }
+
+        .audio-item button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .audio-item button:hover {
+            color: #bbb;
+        }
+
+        .rename-btn {
+            background: none;
+            border: none;
+            color: #bbb;
+            cursor: pointer;
+        }
+
+        .rename-btn:hover {
+            color: #fff;
+        }
+
+        .audio-name {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <button class="upload-btn" onclick="document.getElementById('file-upload').click()">↑</button>
+        <input type="file" id="file-upload" accept="audio/*,video/*" style="display: none;" multiple onchange="handleFileUpload(event)">
+    </div>
+
+    <div class="audio-list" id="audio-list">
+        <!-- Audio files will appear here -->
+    </div>
+
+    <script>
+        const audioListContainer = document.getElementById('audio-list');
+        const fileUploadInput = document.getElementById('file-upload');
+
+        // Function to handle the file upload and create audio elements
+        function handleFileUpload(event) {
+            const files = event.target.files;
+            Array.from(files).forEach((file, index) => {
+                const audioItem = document.createElement('div');
+                audioItem.classList.add('audio-item');
+
+                // Create a container for the name
+                const audioName = document.createElement('span');
+                audioName.classList.add('audio-name');
+                audioName.textContent = file.name.split('.')[0];  // Default name is the file name without extension
+
+                // Create audio element
+                const audioElement = document.createElement('audio');
+                const audioURL = URL.createObjectURL(file);
+                audioElement.src = audioURL;
+                audioElement.controls = false;  // Disable built-in controls
+
+                // Create Play/Pause button
+                const playPauseBtn = document.createElement('button');
+                playPauseBtn.innerHTML = '▶️'; // Play icon
+                playPauseBtn.onclick = () => togglePlay(audioElement, playPauseBtn);
+
+                // Rename button
+                const renameBtn = document.createElement('button');
+                renameBtn.innerHTML = '✏️'; // Pencil icon
+                renameBtn.classList.add('rename-btn');
+                renameBtn.onclick = () => renameAudio(audioItem, audioName);
+
+                // Audio item structure
+                audioItem.appendChild(audioName);
+                audioItem.appendChild(playPauseBtn);
+                audioItem.appendChild(audioElement);
+                audioItem.appendChild(renameBtn);
+                audioItem.setAttribute('data-index', index);
+
+                audioListContainer.appendChild(audioItem);
+            });
+        }
+
+        // Function to toggle play/pause
+        function togglePlay(audioElement, button) {
+            if (audioElement.paused) {
+                audioElement.play();
+                button.innerHTML = '❚❚'; // Pause icon
+            } else {
+                audioElement.pause();
+                button.innerHTML = '▶️'; // Play icon
+            }
+        }
+
+        // Function to rename the audio item
+        function renameAudio(audioItem, audioName) {
+            const currentName = audioName.textContent;
+            const newName = prompt('Enter new name for the audio:', currentName);
+            if (newName) {
+                audioName.textContent = newName;  // Update the name at the front of the audio item
+            }
+        }
+    </script>
+
+</body>
+</html>
